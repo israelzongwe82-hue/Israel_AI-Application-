@@ -1,4 +1,4 @@
-name: Build Windows Setup - Israël-AI
+name: créer-windows
 
 on:
   push:
@@ -8,23 +8,29 @@ on:
 jobs:
   build-windows:
     runs-on: windows-latest
+    
     steps:
       - uses: actions/checkout@v4
       
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
-          
+
       - name: Installer dépendances
+        run: npm install
+
+      - name: Générer Setup.exe
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm install
-          
-      - name: Build Setup.exe
-        run: |
-          npm run build
-          
-      - name: Upload Setup Windows
+          npm run build -- --win --publish never
+          # OU si tu utilises electron-builder directement :
+          # npx electron-builder --win nsis --publish never
+
+      - name: Télécharger le programme d'installation Windows
         uses: actions/upload-artifact@v4
         with:
-          name: Israel-AI-Windows-Setup
-          path: dist/*Setup*.exe
+          name: Israel-AI-Setup-Windows
+          path: |
+            dist/*.exe
+            dist/*.blockmap
