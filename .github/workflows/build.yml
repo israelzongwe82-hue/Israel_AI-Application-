@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '17'
+          java-version: '21'
 
       - name: Installer et préparer
         run: |
@@ -27,9 +27,6 @@ jobs:
           mkdir -p www/images
           cp index.html www/
           cp -r images/* www/images/
-          echo "=== Vérification icon et splash ==="
-          ls -lh images/icon.png
-          ls -lh images/splash.png
           ls -lh www/images/
 
       - name: Init Capacitor avec nouvelle adresse
@@ -40,25 +37,15 @@ jobs:
 
       - name: Injecter icon.png et splash.png OFFICIELS
         run: |
-          echo "--- 1. ICON.PNG (ton robot bleu obligatoire) ---"
           for d in mipmap-hdpi mipmap-mdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
             mkdir -p android/app/src/main/res/$d
             cp www/images/icon.png android/app/src/main/res/$d/ic_launcher.png
             cp www/images/icon.png android/app/src/main/res/$d/ic_launcher_round.png
-            cp www/images/icon.png android/app/src/main/res/$d/ic_launcher_foreground.png || true
-            echo "✓ icône injectée dans $d"
           done
-          
-          echo "--- 2. SPLASH.PNG (même photo ronde + Septembre 2026) ---"
           mkdir -p android/app/src/main/res/drawable
           mkdir -p android/app/src/main/res/drawable-nodpi
           cp www/images/splash.png android/app/src/main/res/drawable/splash.png
           cp www/images/splash.png android/app/src/main/res/drawable-nodpi/splash.png
-          cp www/images/icon.png android/app/src/main/res/drawable/ic_launcher.png
-          ls -lh android/app/src/main/res/drawable/splash.png
-          ls -lh android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          
-          echo "--- 3. Définir splash comme écran de démarrage ---"
           cat > android/app/src/main/res/values/styles.xml << 'EOF'
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
@@ -76,7 +63,6 @@ jobs:
               </style>
           </resources>
           EOF
-          echo "✓ splash défini"
 
       - name: Build APK
         run: |
