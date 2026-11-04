@@ -1,0 +1,91 @@
+name: Build Israel-AI Sept2026
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Installer et préparer
+        run: |
+          npm init -y
+          npm install @capacitor/core @capacitor/cli @capacitor/android
+          mkdir -p www/images
+          cp index.html www/
+          cp -r images/* www/images/
+          echo "=== Vérification icon et splash ==="
+          ls -lh images/icon.png
+          ls -lh images/splash.png
+          ls -lh www/images/
+
+      - name: Init Capacitor avec nouvelle adresse
+        run: |
+          npx cap init "Israel AI Sept2026" com.israelzongwe82.israelai.sept2026 --web-dir=www
+          npx cap add android
+          npx cap copy android
+
+      - name: Injecter icon.png et splash.png OFFICIELS
+        run: |
+          echo "--- 1. ICON.PNG (ton robot bleu obligatoire) ---"
+          for d in mipmap-hdpi mipmap-mdpi mipmap-xhdpi mipmap-xxhdpi mipmap-xxxhdpi; do
+            mkdir -p android/app/src/main/res/$d
+            cp www/images/icon.png android/app/src/main/res/$d/ic_launcher.png
+            cp www/images/icon.png android/app/src/main/res/$d/ic_launcher_round.png
+            cp www/images/icon.png android/app/src/main/res/$d/ic_launcher_foreground.png || true
+            echo "✓ icône injectée dans $d"
+          done
+          
+          echo "--- 2. SPLASH.PNG (même photo ronde + Septembre 2026) ---"
+          mkdir -p android/app/src/main/res/drawable
+          mkdir -p android/app/src/main/res/drawable-nodpi
+          cp www/images/splash.png android/app/src/main/res/drawable/splash.png
+          cp www/images/splash.png android/app/src/main/res/drawable-nodpi/splash.png
+          cp www/images/icon.png android/app/src/main/res/drawable/ic_launcher.png
+          ls -lh android/app/src/main/res/drawable/splash.png
+          ls -lh android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          
+          echo "--- 3. Définir splash comme écran de démarrage ---"
+          cat > android/app/src/main/res/values/styles.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+                  <item name="colorPrimary">#3B82F6</item>
+                  <item name="colorPrimaryDark">#2563EB</item>
+                  <item name="colorAccent">#7C3AED</item>
+              </style>
+              <style name="AppTheme.NoActionBar" parent="AppTheme">
+                  <item name="windowActionBar">false</item>
+                  <item name="windowNoTitle">true</item>
+              </style>
+              <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
+                  <item name="android:background">@drawable/splash</item>
+              </style>
+          </resources>
+          EOF
+          echo "✓ splash défini"
+
+      - name: Build APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug
+
+      - name: Upload APK final
+        uses: actions/upload-artifact@v4
+        with:
+          name: israel-ai-sept2026-avec-icone-officielle
+          path: android/app/build/outputs/apk/debug/app-debug.apk
