@@ -1,4 +1,4 @@
-name: Build Israel-AI Sept2026
+name: Construire Israël-IA Septembre 2026
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  construire:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -18,18 +18,19 @@ jobs:
       - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
-          java-version: '21'
+          java-version: '17'
 
       - name: Installer et préparer
         run: |
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install @capacitor/core@6 @capacitor/cli@6 @capacitor/android@6
           mkdir -p www/images
           cp index.html www/
           cp -r images/* www/images/
-          ls -lh www/images/
+          ls -lh www/images/icon.png
+          ls -lh www/images/splash.png
 
-      - name: Init Capacitor avec nouvelle adresse
+      - name: Init Capacitor avec nouvelle adresse unique
         run: |
           npx cap init "Israel AI Sept2026" com.israelzongwe82.israelai.sept2026 --web-dir=www
           npx cap add android
@@ -46,29 +47,15 @@ jobs:
           mkdir -p android/app/src/main/res/drawable-nodpi
           cp www/images/splash.png android/app/src/main/res/drawable/splash.png
           cp www/images/splash.png android/app/src/main/res/drawable-nodpi/splash.png
-          cat > android/app/src/main/res/values/styles.xml << 'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
-          <resources>
-              <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-                  <item name="colorPrimary">#3B82F6</item>
-                  <item name="colorPrimaryDark">#2563EB</item>
-                  <item name="colorAccent">#7C3AED</item>
-              </style>
-              <style name="AppTheme.NoActionBar" parent="AppTheme">
-                  <item name="windowActionBar">false</item>
-                  <item name="windowNoTitle">true</item>
-              </style>
-              <style name="AppTheme.NoActionBarLaunch" parent="AppTheme.NoActionBar">
-                  <item name="android:background">@drawable/splash</item>
-              </style>
-          </resources>
-          EOF
+          echo "ICON ET SPLASH INJECTÉS ✓"
+          ls -lh android/app/src/main/res/mipmap-xxxhdpi/
+          ls -lh android/app/src/main/res/drawable/splash.png
 
       - name: Build APK
         run: |
           cd android
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --info
 
       - name: Upload APK final
         uses: actions/upload-artifact@v4
