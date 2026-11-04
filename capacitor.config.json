@@ -3,9 +3,16 @@
   "appName": "Israël-ai",
   "webDir": ".",
   "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
   "plugins": {
     "SplashScreen": {
-      "launchShowDuration": 2000
+      "launchShowDuration": 2000,
+      "backgroundColor": "#0a84ff",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false
     }
   }
 }
