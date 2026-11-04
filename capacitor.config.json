@@ -1,0 +1,11 @@
+{
+  "appId": "com.israelai.app",
+  "appName": "Israël-ai",
+  "webDir": ".",
+  "bundledWebRuntime": false,
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000
+    }
+  }
+}
