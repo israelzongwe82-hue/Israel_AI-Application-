@@ -1,0 +1,31 @@
+{
+  "name": "israel-ai-windows",
+  "version": "1.0.0",
+  "description": "Israël_AI - Créé par Israël Kibwe Zongwe - Septembre 2026",
+  "main": "main.js",
+  "author": "Israël Kibwe Zongwe",
+  "build": {
+    "appId": "com.israelzongwe82.israelai.sept2026",
+    "productName": "Israël_AI",
+    "icon": "images/icon.png",
+    "win": {
+      "target": "nsis",
+      "icon": "images/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Israël_AI"
+    }
+  },
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --win"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  }
+    }
